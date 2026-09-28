@@ -364,6 +364,29 @@ def providers() -> dict[str, Provider]:
 def process_alive(pid: int) -> bool:
     if pid <= 0:
         return False
+    if os.name == "nt":
+        # On Windows, os.kill(pid, 0) sends CTRL_C_EVENT instead of performing
+        # the harmless existence probe provided by POSIX. Query a process
+        # handle so lease checks never interrupt agentctl or its caller.
+        import ctypes
+
+        process_synchronize = 0x00100000
+        wait_timeout = 0x00000102
+        error_access_denied = 5
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
+        kernel32.OpenProcess.restype = ctypes.c_void_p
+        kernel32.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+        kernel32.WaitForSingleObject.restype = ctypes.c_uint32
+        kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+        kernel32.CloseHandle.restype = ctypes.c_int
+        handle = kernel32.OpenProcess(process_synchronize, False, pid)
+        if not handle:
+            return ctypes.get_last_error() == error_access_denied
+        try:
+            return kernel32.WaitForSingleObject(handle, 0) == wait_timeout
+        finally:
+            kernel32.CloseHandle(handle)
     try:
         os.kill(pid, 0)
     except ProcessLookupError:

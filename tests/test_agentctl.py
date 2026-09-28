@@ -13,6 +13,7 @@ from agentctl.core import (
     Project,
     discover_executable,
     initial_handoff,
+    process_alive,
     run_provider,
     snapshot,
 )
@@ -245,6 +246,10 @@ class AgentctlTest(unittest.TestCase):
                 Lease(project.workspace, "claude").acquire()
         finally:
             first.release()
+
+    @unittest.skipUnless(os.name == "nt", "Windows process probe regression")
+    def test_process_alive_does_not_signal_current_windows_process(self):
+        self.assertTrue(process_alive(os.getpid()))
 
     def test_checkpoint_command_records_completion(self):
         project = self.initialize()
