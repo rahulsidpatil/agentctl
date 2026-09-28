@@ -1,0 +1,33 @@
+name: Experiment
+description: Test a material product or process uncertainty.
+title: "experiment: "
+labels: ["type:experiment"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Falsifiable hypothesis
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Repeatable method and safety constraints
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result and success threshold
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence to collect
+    validations:
+      required: true
+  - type: textarea
+    id: follow_up
+    attributes:
+      label: Decisions this experiment may change

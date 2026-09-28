@@ -1,0 +1,36 @@
+name: Platform support report
+description: Report or propose behavior for a supported operating environment.
+title: "platform: "
+labels: ["area:platform"]
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options: ["macOS", "Ubuntu", "Windows native", "Ubuntu on WSL2", "Other"]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OS and Python versions
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario and commands
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Observed and expected results
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: Proposed automated or repeatable manual test
+    validations:
+      required: true

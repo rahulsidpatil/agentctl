@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "project": "agentctl",
+  "instructions": [
+    "AGENTS.md"
+  ],
+  "validation": {
+    "full": "python -W error::ResourceWarning -m unittest discover -s tests -v"
+  },
+  "providers": [
+    "codex",
+    "claude",
+    "antigravity"
+  ],
+  "handoff": {
+    "checkpoint_minutes": 30
+  }
+}

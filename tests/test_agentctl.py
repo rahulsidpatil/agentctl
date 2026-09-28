@@ -111,7 +111,7 @@ class AgentctlTest(unittest.TestCase):
         for name in ("codex", "claude", "antigravity"):
             provider_mode = mode.get(name, "handoff") if isinstance(mode, dict) else mode
             configured[name] = {
-                "command": [str(self.fake_provider)],
+                "command": [sys.executable, str(self.fake_provider)],
                 "prompt_mode": "stdin",
                 "environment": {"FAKE_MODE": provider_mode, "FAKE_NEXT": next_provider},
             }
@@ -155,7 +155,10 @@ class AgentctlTest(unittest.TestCase):
             json.dumps(
                 {
                     "providers": {
-                        "codex": {"command": [str(self.fake_provider)], "prompt_mode": "stdin"}
+                        "codex": {
+                            "command": [sys.executable, str(self.fake_provider)],
+                            "prompt_mode": "stdin",
+                        }
                     }
                 }
             )
@@ -316,8 +319,10 @@ class AgentctlTest(unittest.TestCase):
         self.assertTrue(result.safe_state)
         self.assertFalse(any((self.runtime / "workspaces").rglob("lease.json")))
 
-    def test_codex_discovery_accepts_an_explicit_executable(self):
-        self.assertEqual(str(self.fake_provider), discover_executable(str(self.fake_provider)))
+    def test_discovery_accepts_an_explicit_executable(self):
+        discovered = discover_executable(sys.executable)
+        self.assertIsNotNone(discovered)
+        self.assertTrue(Path(str(discovered)).samefile(sys.executable))
 
 
 if __name__ == "__main__":

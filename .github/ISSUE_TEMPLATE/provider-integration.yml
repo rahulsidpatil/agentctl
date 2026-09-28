@@ -1,0 +1,30 @@
+name: Provider integration
+description: Propose or report provider adapter behavior.
+title: "provider: "
+labels: ["area:provider"]
+body:
+  - type: input
+    id: provider
+    attributes:
+      label: Provider and CLI version
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Contract behavior
+      description: Cover discovery, launch, prompt transport, output, termination, and exhaustion.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction or proposed implementation
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence and test plan
+    validations:
+      required: true
