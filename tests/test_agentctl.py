@@ -194,8 +194,9 @@ class AgentctlTest(unittest.TestCase):
 
     def test_automatic_switch_uses_next_available_provider(self):
         project = self.initialize()
-        self.assertEqual(0, self.cli("switch", "codex").returncode)
-        result = self.cli("switch")
+        with patch.dict(os.environ, {"PYTHONIOENCODING": "ascii"}):
+            self.assertEqual(0, self.cli("switch", "codex").returncode)
+            result = self.cli("switch")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual("claude", project.handoff()["current_agent"])
 
