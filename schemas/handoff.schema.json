@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rahulsidpatil/agentctl/schemas/handoff.schema.json",
+  "title": "agentctl normalized handoff",
+  "type": "object",
+  "required": ["schema_version", "work_item", "objective", "status", "branch", "base_commit", "checkpoint_commit", "current_agent", "next_agent", "summary", "remaining", "decisions", "validation", "updated_at"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "work_item": {"type": "string", "minLength": 1},
+    "objective": {"type": "string", "minLength": 1},
+    "status": {"enum": ["active", "draining", "handoff_ready", "recovering", "complete"]},
+    "branch": {"type": "string", "minLength": 1},
+    "base_commit": {"type": "string", "minLength": 1},
+    "checkpoint_commit": {"type": "string", "minLength": 1},
+    "current_agent": {"type": "string", "minLength": 1},
+    "next_agent": {"type": ["string", "null"]},
+    "summary": {"type": "string"},
+    "remaining": {"type": "array", "items": {"type": "string"}},
+    "decisions": {"type": "array", "items": {"type": "string"}},
+    "validation": {"type": "array"},
+    "updated_at": {"type": "string", "format": "date-time"}
+  }
+}

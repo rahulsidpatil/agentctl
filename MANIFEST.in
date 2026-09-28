@@ -1,0 +1,3 @@
+include LICENSE NOTICE README.md CHANGELOG.md
+recursive-include schemas *.json
+recursive-include docs *.md
