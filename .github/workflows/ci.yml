@@ -10,6 +10,8 @@ permissions:
   contents: read
 
 jobs:
+  # Compatibility checks retained until branch protection migrates to
+  # "CI / required" after that check has completed successfully on master.
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -32,3 +34,70 @@ jobs:
         run: |
           sh -n agentctl
           agentctl --version
+
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e . ruff
+      - run: ruff check src tests
+      - run: ruff format --check src tests
+
+  platform-test:
+    name: platform (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: python -m pip install .
+      - name: Test
+        run: python -W error::ResourceWarning -m unittest discover -s tests -v
+      - name: Check installed CLI
+        run: agentctl --version
+
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: python -m twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions
+          path: dist/
+          if-no-files-found: error
+
+  required:
+    name: required
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: [test, quality, platform-test, package]
+    steps:
+      - name: Verify required jobs
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
+          PLATFORM_RESULT: ${{ needs.platform-test.result }}
+          PACKAGE_RESULT: ${{ needs.package.result }}
+        run: |
+          test "$TEST_RESULT" = success
+          test "$QUALITY_RESULT" = success
+          test "$PLATFORM_RESULT" = success
+          test "$PACKAGE_RESULT" = success

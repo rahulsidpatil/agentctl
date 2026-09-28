@@ -1,0 +1,29 @@
+name: Process gap
+description: Record friction or a missed outcome in the AI-native SDLC pilot.
+title: "process: "
+labels: ["type:process-gap"]
+body:
+  - type: textarea
+    id: intended
+    attributes:
+      label: Intended process or outcome
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What actually happened
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact and evidence
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Proposed improvement or experiment
+    validations:
+      required: true

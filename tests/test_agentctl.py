@@ -13,6 +13,7 @@ from agentctl.core import (
     Project,
     discover_executable,
     initial_handoff,
+    process_alive,
     run_provider,
     snapshot,
 )
@@ -111,7 +112,7 @@ class AgentctlTest(unittest.TestCase):
         for name in ("codex", "claude", "antigravity"):
             provider_mode = mode.get(name, "handoff") if isinstance(mode, dict) else mode
             configured[name] = {
-                "command": [str(self.fake_provider)],
+                "command": [sys.executable, str(self.fake_provider)],
                 "prompt_mode": "stdin",
                 "environment": {"FAKE_MODE": provider_mode, "FAKE_NEXT": next_provider},
             }
@@ -155,7 +156,10 @@ class AgentctlTest(unittest.TestCase):
             json.dumps(
                 {
                     "providers": {
-                        "codex": {"command": [str(self.fake_provider)], "prompt_mode": "stdin"}
+                        "codex": {
+                            "command": [sys.executable, str(self.fake_provider)],
+                            "prompt_mode": "stdin",
+                        }
                     }
                 }
             )
@@ -190,8 +194,9 @@ class AgentctlTest(unittest.TestCase):
 
     def test_automatic_switch_uses_next_available_provider(self):
         project = self.initialize()
-        self.assertEqual(0, self.cli("switch", "codex").returncode)
-        result = self.cli("switch")
+        with patch.dict(os.environ, {"PYTHONIOENCODING": "ascii"}):
+            self.assertEqual(0, self.cli("switch", "codex").returncode)
+            result = self.cli("switch")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual("claude", project.handoff()["current_agent"])
 
@@ -242,6 +247,10 @@ class AgentctlTest(unittest.TestCase):
                 Lease(project.workspace, "claude").acquire()
         finally:
             first.release()
+
+    @unittest.skipUnless(os.name == "nt", "Windows process probe regression")
+    def test_process_alive_does_not_signal_current_windows_process(self):
+        self.assertTrue(process_alive(os.getpid()))
 
     def test_checkpoint_command_records_completion(self):
         project = self.initialize()
@@ -316,8 +325,10 @@ class AgentctlTest(unittest.TestCase):
         self.assertTrue(result.safe_state)
         self.assertFalse(any((self.runtime / "workspaces").rglob("lease.json")))
 
-    def test_codex_discovery_accepts_an_explicit_executable(self):
-        self.assertEqual(str(self.fake_provider), discover_executable(str(self.fake_provider)))
+    def test_discovery_accepts_an_explicit_executable(self):
+        discovered = discover_executable(sys.executable)
+        self.assertIsNotNone(discovered)
+        self.assertTrue(Path(str(discovered)).samefile(sys.executable))
 
 
 if __name__ == "__main__":

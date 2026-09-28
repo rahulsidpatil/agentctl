@@ -114,6 +114,17 @@ python3 -m venv .venv
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and the
 [provider adapter guide](docs/provider-adapters.md) before contributing.
 
+Development is managed through the [public roadmap](ROADMAP.md), the
+[MVP backlog](docs/backlog/mvp.md), and the
+[AI-native SDLC playbook](docs/sdlc/lifecycle.md). The project records its
+[history](docs/history/project-origin.md), [decisions](docs/decisions/README.md),
+[experiments](docs/experiments/README.md), and milestone/release retrospectives
+so successful and failed practices can become a reusable engineering system.
+See [platform support](docs/platform-support.md) and the
+[release process](docs/release-process.md) for current validation boundaries.
+Repository maintainers can reproduce labels, milestones, Project fields, and
+protection settings from the [GitHub operations runbook](docs/github-operations.md).
+
 ## License
 
 Apache-2.0.

@@ -1,0 +1,60 @@
+name: Bug report
+description: Report reproducible incorrect or unsafe agentctl behavior.
+title: "bug: "
+labels: ["type:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Remove credentials, private source, prompts, and sensitive logs.
+  - type: input
+    id: version
+    attributes:
+      label: agentctl version
+      placeholder: 0.3.0a2
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Operating environment
+      description: OS/version and whether this is native, WSL, container, or remote.
+    validations:
+      required: true
+  - type: input
+    id: provider
+    attributes:
+      label: Provider and version
+      description: Use "not applicable" if no provider was involved.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Sanitized doctor output
+      description: Paste `agentctl doctor` output after removing private data.
+      render: text
+  - type: dropdown
+    id: data_loss
+    attributes:
+      label: Did this lose or unexpectedly mutate repository work?
+      options: ["No", "Possibly", "Yes"]
+    validations:
+      required: true

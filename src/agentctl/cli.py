@@ -204,7 +204,7 @@ def cmd_status(args: argparse.Namespace) -> int:
     if args.verbose:
         print(json.dumps({"handoff": state, "lease": lease}, indent=2))
         return 0
-    running = f" · running as PID {lease.get('supervisor_pid')}" if lease else ""
+    running = f" - running as PID {lease.get('supervisor_pid')}" if lease else ""
     print(f"{project.name}: {state['work_item']}")
     print(f"Agent: {display_name(str(state['current_agent']))}{running}")
     print(f"State: {str(state['status']).replace('_', ' ')}")
@@ -254,7 +254,7 @@ def cmd_switch(args: argparse.Namespace) -> int:
         live_provider = str(load_json(lease_path).get("provider", current or "unknown"))
         if live_provider == target:
             raise AgentctlError(f"{display_name(target)} is already running")
-        print(f"Stopping {display_name(live_provider)} safely…")
+        print(f"Stopping {display_name(live_provider)} safely...")
         stop_active_supervisor(project, args.grace_seconds)
 
     if existing is None or existing["status"] == "complete":
@@ -269,9 +269,9 @@ def cmd_switch(args: argparse.Namespace) -> int:
     next_provider = candidates[0] if candidates else None
     source = live_provider or current
     if source and source != target:
-        print(f"Switching {display_name(source)} → {display_name(target)}…")
+        print(f"Switching {display_name(source)} -> {display_name(target)}...")
     else:
-        print(f"Starting {display_name(target)}…")
+        print(f"Starting {display_name(target)}...")
     result = run_provider(
         project,
         target,
